@@ -16,3 +16,6 @@ google-generativeai==0.5.4
 
 # Tavily search API
 tavily-python==0.3.3
+
+# Fix SQLite version issue on Streamlit Cloud
+pysqlite3-binary
