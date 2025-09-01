@@ -1,11 +1,12 @@
 # src/shopping_agents.py
 
 from crewai import Agent
-#from crewai_tools.tools import ScrapeWebsiteTool, TavilySearchResults
-from crewai_tools.tools import ScrapeWebsiteTool, TavilySearchTool
+from crewai_tools.tools import ScrapeWebsiteTool
+from crewai_tools import TavilySearchTool
 
 from langchain_google_generativeai import ChatGoogleGenerativeAI
 import os
+
 
 # Initialize the LLM
 # Ensure you have your GOOGLE_API_KEY in your environment
