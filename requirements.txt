@@ -13,9 +13,12 @@ python-dotenv==1.0.1
 
 # Google AI
 google-generativeai==0.5.4
+langchain-google-genai==0.0.12
 
 # Tavily search API
 tavily-python==0.3.3
 
 # Fix SQLite version issue on Streamlit Cloud
 pysqlite3-binary
+
+
