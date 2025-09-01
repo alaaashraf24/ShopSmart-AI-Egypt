@@ -117,6 +117,7 @@ class ShoppingAgents:
                       understanding of user needs. You provide clear, actionable recommendations
                       that help users make confident purchasing decisions. Your final output is
                       the culmination of the team's entire effort.""",
+            tools=[],         
             llm=llm,
             verbose=True,
             allow_delegation=False,
