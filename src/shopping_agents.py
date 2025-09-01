@@ -1,23 +1,27 @@
 # src/shopping_agents.py
 
+import os
 from crewai import Agent
 from crewai_tools.tools import ScrapeWebsiteTool
 from tavily import TavilyClient
-
-from langchain_google_generativeai import ChatGoogleGenerativeAI
-import os
-
+from langchain_google_genai import ChatGoogleGenerativeAI
 
 # Load API keys from environment (Streamlit secrets or system env vars)
 TAVILY_API_KEY = os.environ.get("TAVILY_API_KEY")
 GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY")
+
+# Validate API keys early
+if not GOOGLE_API_KEY:
+    raise ValueError("❌ Missing GOOGLE_API_KEY. Please set it in Streamlit secrets or environment.")
+if not TAVILY_API_KEY:
+    raise ValueError("❌ Missing TAVILY_API_KEY. Please set it in Streamlit secrets or environment.")
 
 # Initialize the LLM
 llm = ChatGoogleGenerativeAI(
     model="gemini-pro",
     verbose=True,
     temperature=0.2,
-    google_api_key=GOOGLE_API_KEY
+    google_api_key=GOOGLE_API_KEY,
 )
 
 # Initialize Tavily client
@@ -34,9 +38,15 @@ class TavilySearchToolWrapper:
         self.client = client
 
     def run(self, query: str) -> str:
-        """Perform a search and return results as string."""
+        """Perform a search and return nicely formatted results."""
         results = self.client.search(query)
-        return str(results)
+        formatted = []
+        for r in results.get("results", []):
+            title = r.get("title", "No title")
+            url = r.get("url", "")
+            snippet = r.get("content", "")
+            formatted.append(f"- **{title}**\n  {snippet}\n  🔗 {url}")
+        return "\n\n".join(formatted) if formatted else "No results found."
 
 
 # Initialize tools
