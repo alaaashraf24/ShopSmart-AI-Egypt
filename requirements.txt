@@ -1,7 +1,18 @@
+# Core AI & Agents
 crewai==0.30.11
-crewai-tools==0.1.4  # Downgrade crewai-tools to a compatible version
+crewai-tools==0.1.4
+
+# Vector DB (must match crewai-tools requirement: >=0.4.22,<0.5.0)
+chromadb==0.4.22
+
+# Streamlit (UI)
 streamlit==1.35.0
+
+# Environment management
 python-dotenv==1.0.1
+
+# Google AI
 google-generativeai==0.5.4
+
+# Tavily search API
 tavily-python==0.3.3
-chromadb==0.4.15
