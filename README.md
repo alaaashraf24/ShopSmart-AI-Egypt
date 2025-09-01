@@ -1,0 +1,1 @@
+# 🛍️ ShopSmart AI - Your Intelligent Shopping Assistant for Egypt
