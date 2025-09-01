@@ -2,15 +2,15 @@
 
 import os
 from crewai import Agent
-from crewai_tools.tools import ScrapeWebsiteTool
+from crewai_tools import BaseTool, ScrapeWebsiteTool
 from tavily import TavilyClient
 from langchain_google_genai import ChatGoogleGenerativeAI
 
-# Load API keys from environment (Streamlit secrets or system env vars)
+# Load API keys from environment
 TAVILY_API_KEY = os.environ.get("TAVILY_API_KEY")
 GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY")
 
-# Validate API keys early
+# Validate API keys
 if not GOOGLE_API_KEY:
     raise ValueError("❌ Missing GOOGLE_API_KEY. Please set it in Streamlit secrets or environment.")
 if not TAVILY_API_KEY:
@@ -28,18 +28,14 @@ llm = ChatGoogleGenerativeAI(
 tavily_client = TavilyClient(api_key=TAVILY_API_KEY)
 
 
-# ---- Tavily Tool Wrapper ----
-class TavilySearchToolWrapper:
-    """Wrapper to make TavilyClient usable as a CrewAI Tool."""
-    name = "Tavily Search Tool"
-    description = "Searches the web using Tavily API. Returns relevant links and summaries."
+# ---- Tavily Tool (BaseTool) ----
+class TavilySearchTool(BaseTool):
+    name: str = "Tavily Search Tool"
+    description: str = "Searches the web using Tavily API. Returns relevant links and summaries."
 
-    def __init__(self, client: TavilyClient):
-        self.client = client
-
-    def run(self, query: str) -> str:
+    def _run(self, query: str) -> str:
         """Perform a search and return nicely formatted results."""
-        results = self.client.search(query)
+        results = tavily_client.search(query)
         formatted = []
         for r in results.get("results", []):
             title = r.get("title", "No title")
@@ -50,18 +46,12 @@ class TavilySearchToolWrapper:
 
 
 # Initialize tools
-tavily_tool = TavilySearchToolWrapper(tavily_client)
+tavily_tool = TavilySearchTool()
 scrape_tool = ScrapeWebsiteTool()
 
 
 # ---- Shopping Agents ----
 class ShoppingAgents:
-    """
-    This class defines the agents that will be part of the shopping crew.
-    Each agent has a specific role, goal, and backstory, along with tools
-    it can use to perform its tasks.
-    """
-
     def product_search_agent(self):
         return Agent(
             role="E-commerce Search Specialist for Egypt",
@@ -117,7 +107,7 @@ class ShoppingAgents:
                       understanding of user needs. You provide clear, actionable recommendations
                       that help users make confident purchasing decisions. Your final output is
                       the culmination of the team's entire effort.""",
-            tools=[],         
+            tools=[],  # Final step doesn’t need tools
             llm=llm,
             verbose=True,
             allow_delegation=False,
