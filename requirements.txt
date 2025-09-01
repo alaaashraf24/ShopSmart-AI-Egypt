@@ -4,4 +4,5 @@ streamlit==1.35.0
 python-dotenv==1.0.1
 google-generativeai==0.5.4
 tavily-python==0.3.3
-embedchain
+chromadb==0.4.15  # Downgrade to a compatible version
+# Note: Remove embedchain and pysqlite3-binary
