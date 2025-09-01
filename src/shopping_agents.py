@@ -18,7 +18,7 @@ if not TAVILY_API_KEY:
 
 # Initialize the LLM
 llm = ChatGoogleGenerativeAI(
-    model="gemini-pro",
+    model="gemini-2.0-flash",
     verbose=True,
     temperature=0.2,
     google_api_key=GOOGLE_API_KEY,

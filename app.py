@@ -100,8 +100,7 @@ else:
 st.sidebar.title("About ShopSmart AI")
 st.sidebar.info(
     "This application uses a multi-agent system powered by CrewAI and Google's Gemini model "
-    "to provide intelligent shopping recommendations. It's designed as a portfolio project "
-    "to showcase advanced AI engineering skills."
+    "to provide intelligent shopping recommendations."
 )
 st.sidebar.markdown("---")
 st.sidebar.subheader("How It Works")
