@@ -2,26 +2,56 @@
 
 from crewai import Agent
 from crewai_tools.tools import ScrapeWebsiteTool
-from crewai_tools import TavilySearchTool
+from tavily import TavilyClient
 
 from langchain_google_generativeai import ChatGoogleGenerativeAI
 import os
 
 
+# Load API keys from environment (Streamlit secrets or system env vars)
+TAVILY_API_KEY = os.environ.get("TAVILY_API_KEY")
+GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY")
+
 # Initialize the LLM
-# Ensure you have your GOOGLE_API_KEY in your environment
-llm = ChatGoogleGenerativeAI(model="gemini-pro", verbose=True, temperature=0.2, google_api_key=os.environ.get("GOOGLE_API_KEY"))
+llm = ChatGoogleGenerativeAI(
+    model="gemini-pro",
+    verbose=True,
+    temperature=0.2,
+    google_api_key=GOOGLE_API_KEY
+)
+
+# Initialize Tavily client
+tavily_client = TavilyClient(api_key=TAVILY_API_KEY)
+
+
+# ---- Tavily Tool Wrapper ----
+class TavilySearchToolWrapper:
+    """Wrapper to make TavilyClient usable as a CrewAI Tool."""
+    name = "Tavily Search Tool"
+    description = "Searches the web using Tavily API. Returns relevant links and summaries."
+
+    def __init__(self, client: TavilyClient):
+        self.client = client
+
+    def run(self, query: str) -> str:
+        """Perform a search and return results as string."""
+        results = self.client.search(query)
+        return str(results)
+
 
 # Initialize tools
-tavily_tool = TavilySearchTool()
+tavily_tool = TavilySearchToolWrapper(tavily_client)
 scrape_tool = ScrapeWebsiteTool()
 
+
+# ---- Shopping Agents ----
 class ShoppingAgents:
     """
     This class defines the agents that will be part of the shopping crew.
     Each agent has a specific role, goal, and backstory, along with tools
     it can use to perform its tasks.
     """
+
     def product_search_agent(self):
         return Agent(
             role="E-commerce Search Specialist for Egypt",
