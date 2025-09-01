@@ -28,39 +28,21 @@ llm = ChatGoogleGenerativeAI(
 tavily_client = TavilyClient(api_key=TAVILY_API_KEY)
 
 
-# ---- Helper: Convert numeric ratings to stars ----
-def rating_to_stars(rating_str: str) -> str:
-    try:
-        if not rating_str or "Not Available" in rating_str:
-            return "No rating ⭐"
-        numeric = float(rating_str.split("/")[0].strip())
-        full_stars = int(numeric)
-        half_star = 1 if numeric - full_stars >= 0.5 else 0
-        return "⭐" * full_stars + ("✰" if half_star else "")
-    except Exception:
-        return "No rating ⭐"
-
-
-# ---- Tavily Tool (structured output) ----
+# ---- Tavily Tool (BaseTool) ----
 class TavilySearchTool(BaseTool):
     name: str = "Tavily Search Tool"
-    description: str = (
-        "Searches the web using Tavily API for products. "
-        "Always return product_name, price, rating, and link."
-    )
+    description: str = "Searches the web using Tavily API. Returns relevant links and summaries."
 
-    def _run(self, query: str):
-        """Perform a search and return structured product results."""
+    def _run(self, query: str) -> str:
+        """Perform a search and return nicely formatted results."""
         results = tavily_client.search(query)
-        structured = []
+        formatted = []
         for r in results.get("results", []):
-            structured.append({
-                "product_name": r.get("title", "No title"),
-                "price": r.get("price", "Not Available"),
-                "rating": r.get("rating", "Not Available"),
-                "link": r.get("url", ""),
-            })
-        return structured if structured else [{"product_name": "No results found"}]
+            title = r.get("title", "No title")
+            url = r.get("url", "")
+            snippet = r.get("content", "")
+            formatted.append(f"- **{title}**\n  {snippet}\n  🔗 {url}")
+        return "\n\n".join(formatted) if formatted else "No results found."
 
 
 # Initialize tools
@@ -74,10 +56,10 @@ class ShoppingAgents:
         return Agent(
             role="E-commerce Search Specialist for Egypt",
             goal="""Find the most relevant product listings on Amazon.eg, Jumia, and Noon
-                 based on a user's detailed query. The output must be a structured JSON list
-                 with product_name, price, rating, and link.""",
-            backstory="""An expert in navigating Egyptian e-commerce platforms. You specialize in
-                      extracting structured product information that is reliable and accurate.""",
+                 based on a user's detailed query. The output should be a list of URLs.""",
+            backstory="""An expert in navigating the complexities of Egyptian e-commerce platforms.
+                      You are skilled at using advanced search techniques to uncover the best product
+                      options available, focusing exclusively on Amazon.eg, Jumia, and Noon.""",
             tools=[tavily_tool],
             llm=llm,
             verbose=True,
@@ -87,11 +69,12 @@ class ShoppingAgents:
     def product_analyst_agent(self):
         return Agent(
             role="Product Features and Pricing Analyst",
-            goal="""Analyze the structured product listings and ensure that price and rating
-                 fields are correctly parsed. Normalize missing values to 'Not Available'.
-                 Return a cleaned JSON list with product_name, price, rating, and link.""",
-            backstory="""A meticulous analyst with a sharp eye for detail. You ensure structured
-                      product data is consistent and usable for recommendation.""",
+            goal="""Analyze the product listings from the provided URLs to extract key features,
+                 specifications, and pricing information. Select the single best product based on
+                 this analysis and provide its URL.""",
+            backstory="""A meticulous analyst with a sharp eye for detail. You excel at comparing
+                      products, identifying the best value for money, and understanding what
+                      features matter most to consumers. Your analysis is data-driven and objective.""",
             tools=[scrape_tool],
             llm=llm,
             verbose=True,
@@ -103,8 +86,10 @@ class ShoppingAgents:
             role="Customer Review Synthesizer",
             goal="""Scrape and analyze customer reviews for the single best product identified
                  by the analyst. Summarize the findings into a list of pros and cons.""",
-            backstory="""An expert in sentiment analysis and text summarization. You distill
-                      reviews into clear pros and cons for better decision-making.""",
+            backstory="""An expert in sentiment analysis and text summarization. You can quickly
+                      read through hundreds of reviews to distill the most important points,
+                      highlighting common praises and complaints to give a clear picture of
+                      customer satisfaction.""",
             tools=[scrape_tool],
             llm=llm,
             verbose=True,
@@ -114,32 +99,15 @@ class ShoppingAgents:
     def recommendation_agent(self):
         return Agent(
             role="Shopping Recommendation Expert",
-            goal="""Synthesize all gathered information (features, price, rating, and reviews)
-                 into a polished Markdown recommendation. Show product name, price, star rating,
-                 pros, cons, and a direct purchase link.""",
-            backstory="""A trusted shopping advisor who presents recommendations in a clear,
-                      concise, and user-friendly way.""",
-            instructions=f"""Format the final output like this:
-
-## 🏆 Final Recommendation
-
-**Product Name**: <product_name>  
-💰 **Price**: <price>  
-⭐ **Rating**: {{rating_to_stars('<rating>')}} (<rating>)
-
-### ✅ Why We Recommend This
-<one short paragraph>
-
-### 👍 Pros
-- <pros>
-
-### 👎 Cons
-- <cons>
-
-### 🔗 Purchase Link
-[Buy Now](<link>)
-""",
-            tools=[],
+            goal="""Synthesize all the gathered information (product features, pricing, and
+                 customer reviews) to provide a final, comprehensive recommendation to the user.
+                 The recommendation should be clear, concise, and include a direct link to the
+                 product page.""",
+            backstory="""A trusted shopping advisor who combines analytical insights with an
+                      understanding of user needs. You provide clear, actionable recommendations
+                      that help users make confident purchasing decisions. Your final output is
+                      the culmination of the team's entire effort.""",
+            tools=[],  # Final step doesn’t need tools
             llm=llm,
             verbose=True,
             allow_delegation=False,
