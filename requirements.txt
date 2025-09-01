@@ -1,5 +1,5 @@
 # Core AI & Agents
-crewai==0.41.1rc0
+crewai==0.41.1
 crewai-tools==0.1.4
 
 # Vector DB
