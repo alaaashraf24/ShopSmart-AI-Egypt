@@ -1,7 +1,9 @@
 # src/shopping_agents.py
 
 from crewai import Agent
-from crewai_tools.tools import ScrapeWebsiteTool, TavilySearchResults
+#from crewai_tools.tools import ScrapeWebsiteTool, TavilySearchResults
+from crewai_tools.tools import ScrapeWebsiteTool, TavilySearchTool
+
 from langchain_google_generativeai import ChatGoogleGenerativeAI
 import os
 
@@ -10,7 +12,7 @@ import os
 llm = ChatGoogleGenerativeAI(model="gemini-pro", verbose=True, temperature=0.2, google_api_key=os.environ.get("GOOGLE_API_KEY"))
 
 # Initialize tools
-tavily_tool = TavilySearchResults()
+tavily_tool = TavilySearchTool()
 scrape_tool = ScrapeWebsiteTool()
 
 class ShoppingAgents:
