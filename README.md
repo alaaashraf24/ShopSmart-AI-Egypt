@@ -1,9 +1,5 @@
 # 🛍️ ShopSmart Multi-Agent AI
 
-[![Streamlit](https://img.shields.io/badge/Deployed%20on-Streamlit%20Cloud-brightgreen?logo=streamlit)]  
-[![Python](https://img.shields.io/badge/Python-3.10+-blue.svg?logo=python)](https://www.python.org/)  
-[![CrewAI](https://img.shields.io/badge/AI%20Framework-CrewAI-purple)](https://github.com/joaomdmoura/crewAI)  
-
 **ShopSmart Multi-Agent AI** is an intelligent shopping assistant built with **CrewAI**, **Google Gemini (Generative AI)**, and **multi-agent orchestration**.  
 It helps users in **Egypt** find the **best products across Amazon.eg, Jumia, and Noon** by:  
 
@@ -128,9 +124,7 @@ streamlit run app.py
 
 ## 🌐 Deployment
 
-This project is deployed on **Streamlit Cloud**:
-🔗 [Live Demo](https://shopsmart-ai-egypt-fhebc9k7udyy4qup6qwbor.streamlit.app/)
-
+This project is deployed on **Streamlit Cloud**
 ---
 
 ## 🛠️ Tech Stack
@@ -159,5 +153,3 @@ This project is deployed on **Streamlit Cloud**:
 This project is licensed under the MIT License.
 
 ---
-this full version in your portfolio?
-```
