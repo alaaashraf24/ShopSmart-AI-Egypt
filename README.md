@@ -1,6 +1,6 @@
 # 🛍️ ShopSmart Multi-Agent AI
 
-[![Streamlit](https://img.shields.io/badge/Deployed%20on-Streamlit%20Cloud-brightgreen?logo=streamlit)](https://shopsmart-ai-egypt-fhebc9k7udyy4qup6qwbor.streamlit.app/)  
+[![Streamlit](https://img.shields.io/badge/Deployed%20on-Streamlit%20Cloud-brightgreen?logo=streamlit)]  
 [![Python](https://img.shields.io/badge/Python-3.10+-blue.svg?logo=python)](https://www.python.org/)  
 [![CrewAI](https://img.shields.io/badge/AI%20Framework-CrewAI-purple)](https://github.com/joaomdmoura/crewAI)  
 
